@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "404577030204",
+    "project_id": "balance-fae0c",
+    "storage_bucket": "balance-fae0c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:404577030204:android:f63944230223eefbe2b339",
+        "android_client_info": {
+          "package_name": "ankitha.balance"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "404577030204-2fpo3g4872a2cevbacav0rgb1b38evmo.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAzbVXS5YzqP4dlYeZWsY-RXN21HDyob08"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "404577030204-2fpo3g4872a2cevbacav0rgb1b38evmo.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
