@@ -1,11 +1,11 @@
 import 'dart:math';
 
-import 'package:balance/Measurements.dart';
+import 'package:balance/entity/Measurements.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:balance/constants.dart';
-import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:intl/intl.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
 
 class MeasurementResultScreen extends StatefulWidget {
   static String id = 'WeightScreenPage';

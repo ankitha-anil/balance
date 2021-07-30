@@ -1,53 +1,73 @@
+import 'package:adv_fab/adv_fab.dart';
+import 'package:balance/WidgetAnimator.dart';
 import 'package:balance/constants.dart';
+import 'package:balance/entity/Meal.dart';
+import 'package:balance/widget/MealEdit.dart';
+import 'package:balance/widget/MealInput.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-class MealCard extends StatelessWidget {
-  MealCard(
-      {this.description,
-      this.cost,
-      this.time,
-      this.food,
-      this.meal,
-      this.mealtype});
+// ignore: must_be_immutable
+class MealCard extends StatefulWidget {
+  MealCard({this.meal});
+  Meal meal;
 
-  final String description;
-  final double cost;
-  final DateTime time;
-  final kfoodType food;
-  final kmealType mealtype;
-  final kmeal meal;
+  @override
+  _MealCardState createState() => _MealCardState();
+}
+
+class _MealCardState extends State<MealCard> {
+  AdvFabController controller;
+
+  ScrollPhysics pageScrollPhysics;
+
+  double opacityValue;
+
+  bool isActiveReminderEmpty;
+
+  bool isMissedReminderEmpty;
+
+  bool showFAB;
+
+  bool useShadowOnFAb;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(12.0),
+      padding: const EdgeInsets.symmetric(vertical: 3.0, horizontal: 10),
       child: Card(
           elevation: 5,
           shape: BeveledRectangleBorder(
             borderRadius: BorderRadius.circular(10.0),
           ),
           child: Padding(
-            padding: const EdgeInsets.all(12.0),
+            padding: const EdgeInsets.all(8.0),
             child: Column(children: [
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   SizedBox(
-                    width: 10,
+                    width: 20,
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(3.0),
-                    child: Text(
-                      getStringValue(meal),
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontFamily: 'Open Sans',
-                        fontWeight: FontWeight.bold,
-                      ),
+                  Text(
+                    widget.meal.meal,
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontFamily: 'Open Sans',
+                      fontWeight: FontWeight.bold,
                     ),
                   ),
-                  Icon(Icons.edit)
+                  IconButton(
+                    icon: Icon(Icons.edit),
+                    iconSize: 25,
+                    padding: EdgeInsets.zero,
+                    constraints: BoxConstraints(),
+                    onPressed: () {
+                      print("in");
+                      mealEditBottomModal(context, widget.meal);
+                    },
+                  )
                 ],
               ),
               Divider(
@@ -55,17 +75,18 @@ class MealCard extends StatelessWidget {
                 color: Colors.black45,
               ),
               Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(6.0),
                 child: Text(
-                  description,
+                  widget.meal.description,
                   style: TextStyle(
                     fontSize: 15,
                     fontFamily: 'Open Sans',
                   ),
+                  textAlign: TextAlign.start,
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(3.0),
                 child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -73,7 +94,7 @@ class MealCard extends StatelessWidget {
                         children: [
                           Icon(Icons.attach_money),
                           Text(
-                            ":  " + cost.toString(),
+                            ":  " + widget.meal.cost.toString(),
                             style: TextStyle(
                               fontSize: 15,
                               fontFamily: 'Open Sans',
@@ -85,7 +106,10 @@ class MealCard extends StatelessWidget {
                         children: [
                           Icon(Icons.access_time),
                           Text(
-                            ":  " + DateFormat("kk:mm").format(time).toString(),
+                            ":  " +
+                                DateFormat.jm()
+                                    .format(widget.meal.time)
+                                    .toString(),
                             style: TextStyle(
                               fontSize: 15,
                               fontFamily: 'Open Sans',
@@ -94,17 +118,17 @@ class MealCard extends StatelessWidget {
                         ],
                       ),
                       Icon(Icons.circle,
-                          color: food == kfoodType.Vegan
+                          color: widget.meal.food == "Vegan"
                               ? Colors.lightGreen
-                              : food == kfoodType.Veg
+                              : widget.meal.food == "Vegetarian"
                                   ? Colors.amber
                                   : Colors.redAccent,
                           size: 40),
                       Icon(
-                          mealtype == kmealType.Fastfood
-                              ? Icons.fastfood_sharp
-                              : mealtype == kmealType.Homemade
-                                  ? Icons.food_bank_sharp
+                          widget.meal.location == "Fast food"
+                              ? Icons.fastfood
+                              : widget.meal.location == "Homemade"
+                                  ? Icons.food_bank
                                   : Icons.dinner_dining,
                           size: 40),
                     ]),
@@ -113,4 +137,38 @@ class MealCard extends StatelessWidget {
           )),
     );
   }
+}
+
+void mealEditBottomModal(context, Meal meal) {
+  print(meal.description);
+
+  showModalBottomSheet(
+    context: context,
+    builder: (BuildContext bc) {
+      return Padding(
+        padding: const EdgeInsets.all(6.0),
+        child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.all(Radius.circular(30)),
+            ),
+            margin: EdgeInsets.all(10),
+            child: Padding(
+              padding: const EdgeInsets.all(5.0),
+              child: MealEdit(
+                meal: meal,
+                onClose: () {
+                  Navigator.pop(context);
+                },
+                // onConfirm: ,
+              ),
+            )),
+      );
+    },
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(50.0),
+    ),
+    isScrollControlled: true,
+    backgroundColor: Colors.transparent,
+  );
 }

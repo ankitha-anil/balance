@@ -2,7 +2,7 @@ import 'package:balance/screens/MeasurementResultScreen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:balance/Measurements.dart';
+import 'package:balance/entity/Measurements.dart';
 import 'package:balance/constants.dart';
 import 'package:balance/widget/Measurecard.dart';
 
