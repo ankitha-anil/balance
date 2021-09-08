@@ -33,7 +33,6 @@ class _FoodScreenState extends State<FoodScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     opacityValue = 1;
     controller = AdvFabController();
@@ -80,8 +79,11 @@ class _FoodScreenState extends State<FoodScreen> {
                                 });
                               });
                             },
+                            selectedDate: DateFormat("yyyy-MM-dd")
+                                .format(selectedDate)
+                                .toString(),
                           ),
-                          heightToExpandTo: 55,
+                          heightToExpandTo: 58,
                           expendedBackgroundColor: Colors.white);
 
                       if (controller.isCollapsed == true) {

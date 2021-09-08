@@ -4,13 +4,14 @@ import 'package:balance/entity/Meal.dart';
 import 'package:balance/widget/MealCard.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_time_picker_spinner/flutter_time_picker_spinner.dart';
 import 'package:intl/intl.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
 import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
 class MealInput extends StatefulWidget {
   final Function onClose;
-  final DateTime selectedDate;
+  final String selectedDate;
 
   const MealInput({
     @required this.onClose,
@@ -51,6 +52,8 @@ class _MealInputState extends State<MealInput> {
 
   final _formKey = GlobalKey<FormState>();
 
+  DateTime dateTime = DateTime.now();
+
   @override
   void initState() {
     super.initState();
@@ -80,13 +83,15 @@ class _MealInputState extends State<MealInput> {
         width: SizeConfig.screenWidth,
         height: 410,
         child: Padding(
-          padding: const EdgeInsets.all(10.0),
+          padding: const EdgeInsets.all(8.0),
           child: Form(
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Expanded(
+                  flex: 5,
                   child: ListView.builder(
                       scrollDirection: Axis.horizontal,
                       itemCount: mealChoices.length,
@@ -119,24 +124,27 @@ class _MealInputState extends State<MealInput> {
                       }),
                 ),
                 Expanded(
+                    flex: 6,
                     child: TextFormField(
-                  controller: textEditingController,
-                  textCapitalization: TextCapitalization.sentences,
-                  decoration: InputDecoration(
-                    border: UnderlineInputBorder(),
-                    labelText: 'Description',
-                    labelStyle: TextStyle(
-                      fontFamily: 'Open Sans',
-                    ),
-                    hintMaxLines: 1,
-                  ),
-                  validator: (string) =>
-                      string.isEmpty ? 'Enter description' : null,
-                  onChanged: (string) {
-                    description = string;
-                  },
-                )),
+                      controller: textEditingController,
+                      textCapitalization: TextCapitalization.sentences,
+                      decoration: InputDecoration(
+                        border: UnderlineInputBorder(),
+                        labelText: 'Description',
+                        labelStyle: TextStyle(
+                          fontFamily: 'Open Sans',
+                          //fontSize: 12,
+                        ),
+                        hintMaxLines: 1,
+                      ),
+                      validator: (string) =>
+                          string.isEmpty ? 'Enter description' : null,
+                      onChanged: (string) {
+                        description = string;
+                      },
+                    )),
                 Expanded(
+                  flex: 6,
                   child: TextField(
                     controller: moneyController,
                     decoration: InputDecoration(
@@ -145,6 +153,7 @@ class _MealInputState extends State<MealInput> {
                       labelText: 'Cost',
                       labelStyle: TextStyle(
                         fontFamily: 'Open Sans',
+                        //fontSize: 12,
                       ),
                     ),
                     keyboardType: TextInputType.number,
@@ -154,6 +163,24 @@ class _MealInputState extends State<MealInput> {
                   ),
                 ),
                 Expanded(
+                  flex: 10,
+                  child: TimePickerSpinner(
+                    is24HourMode: false,
+                    normalTextStyle:
+                        TextStyle(fontSize: 18, color: Colors.black45),
+                    highlightedTextStyle: TextStyle(fontSize: 18, color: kblue),
+                    spacing: 25,
+                    itemHeight: 30,
+                    isForce2Digits: true,
+                    onTimeChange: (time) {
+                      setState(() {
+                        dateTime = time;
+                      });
+                    },
+                  ),
+                ),
+                Expanded(
+                  flex: 5,
                   child: ListView.builder(
                       scrollDirection: Axis.horizontal,
                       itemCount: foodChoices.length,
@@ -188,6 +215,7 @@ class _MealInputState extends State<MealInput> {
                       }),
                 ),
                 Expanded(
+                  flex: 5,
                   child: ListView.builder(
                       scrollDirection: Axis.horizontal,
                       itemCount: locationChoices.length,
@@ -228,60 +256,70 @@ class _MealInputState extends State<MealInput> {
                       }),
                 ),
                 Expanded(
+                    flex: 3,
                     child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    IconButton(
-                        color: Colors.red,
-                        iconSize: 40,
-                        icon: Icon(
-                          Icons.delete,
-                          color: Colors.grey[600],
-                        ),
-                        onPressed: () {
-                          widget.onClose();
-                        }),
-                    IconButton(
-                        iconSize: 40,
-                        icon: Icon(
-                          Icons.check_circle,
-                          color: Colors.grey[600],
-                        ),
-                        onPressed: () {
-                          if (_formKey.currentState.validate()) {
-                            meal = mealChoices[mealChoiceIndex];
-                            foodtype = foodChoices[foodChoiceIndex];
-                            location = locationChoices[locationChoiceIndex];
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        IconButton(
+                            color: Colors.red,
+                            iconSize: 40,
+                            icon: Icon(
+                              Icons.delete,
+                              color: Colors.grey[600],
+                            ),
+                            onPressed: () {
+                              widget.onClose();
+                            }),
+                        IconButton(
+                            iconSize: 40,
+                            icon: Icon(
+                              Icons.check_circle,
+                              color: Colors.grey[600],
+                            ),
+                            onPressed: () {
+                              if (_formKey.currentState.validate()) {
+                                meal = mealChoices[mealChoiceIndex];
+                                foodtype = foodChoices[foodChoiceIndex];
+                                location = locationChoices[locationChoiceIndex];
 
-                            MealCard newMeal = new MealCard(
-                                meal: Meal(
-                              description: description,
-                              time: DateTime.now(),
-                              location: location,
-                              meal: meal,
-                              food: foodtype,
-                              cost: cost,
-                            ));
-                            setState(() {
-                              mealList.add(newMeal);
-                            });
-                            try {
-                              _firestore.collection('meals').add({
-                                'description': description,
-                                'time': DateTime.now(),
-                                'location': location,
-                                'meal': meal,
-                                'food': foodtype,
-                                'cost': cost,
-                              });
-                            } catch (e) {
-                              print(e);
-                            }
-                            widget.onClose();
-                          }
-                        }),
-                  ],
-                ))
+                                MealCard newMeal = new MealCard(
+                                    meal: Meal(
+                                  description: description,
+                                  time: DateTime.now(),
+                                  location: location,
+                                  meal: meal,
+                                  food: foodtype,
+                                  cost: cost,
+                                ));
+                                setState(() {
+                                  mealList.add(newMeal);
+                                });
+                                try {
+                                  String time = widget.selectedDate +
+                                      " " +
+                                      DateFormat("hh:mm a")
+                                          .format(dateTime)
+                                          .toString();
+
+                                  final DateFormat format =
+                                      new DateFormat("yyyy-MM-dd hh:mm a");
+
+                                  _firestore.collection('meals').add({
+                                    'description': description,
+                                    'time': format.parse(time),
+                                    'location': location,
+                                    'meal': meal,
+                                    'food': foodtype,
+                                    'cost': cost,
+                                  });
+                                } catch (e) {
+                                  print(e);
+                                }
+                                widget.onClose();
+                              }
+                            }),
+                      ],
+                    ))
               ],
             ),
           ),

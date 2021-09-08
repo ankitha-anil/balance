@@ -12,7 +12,6 @@ class MindScreen extends StatefulWidget {
 class _MindScreenState extends State<MindScreen> {
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
   }
 

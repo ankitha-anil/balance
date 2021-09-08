@@ -32,6 +32,7 @@ dependencies:
   calendar_timeline:
     git:
       url: https://github.com/ankitha-anil/calendar_timeline
+  flutter_time_picker_spinner: ^2.0.0
 
 dev_dependencies:
   flutter_test:
